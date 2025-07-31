@@ -1,0 +1,40 @@
+{
+  "name": "sepolia-multisig-wallet",
+  "version": "1.0.0",
+  "description": "在Sepolia测试网上创建多签钱包的工具",
+  "main": "CreateMultiAddress.js",
+  "scripts": {
+    "build": "tsc",
+    "start:sdk": "npm run build && node dist/CreateMultiAddressSDK.js",
+    "dev:create": "ts-node src/MultiAddress_Create.ts",
+    "dev:get": "ts-node src/MultiAddress_Get.ts",
+    "dev:send": "ts-node src/MultiAddress_SendTx.ts",
+    "dev:graph": "ts-node src/GetDataFromGraph.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ethereum",
+    "multisig",
+    "safe",
+    "sepolia",
+    "blockchain"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.8.1",
+    "@safe-global/protocol-kit": "^6.1.0",
+    "@safe-global/safe-deployments": "^1.37.40",
+    "@safe-global/api-kit": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "graphql-request": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
