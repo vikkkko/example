@@ -1,40 +1,60 @@
-import Safe from '@safe-global/protocol-kit'
-import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
+import {RECIPIENT_ADDRESS, SafeUtils } from './utils/SafeUtils';
 
 dotenv.config();
 
 /////这个脚本演示了如何使用查询多签钱包的配置
-
-// Sepolia测试网配置
-const SEPOLIA_RPC_URL = `https://sepolia.infura.io/v3/${process.env['INFURA_PROJECT_ID']}`; // 请替换为您的Infura项目ID
-
-const safeAddress = '0xB7c479d52C7e0ca201B017A7C070927E4d2BA516';
+/// 包含了一下示例
+// 1. 查询某个地址参与的多签
+// 2. 获取多签钱包的owners
+// 3. 获取多签需要多少个签名才能执行交易
+// 4. 获取多签钱包的incomingTxs（收token的交易）
+// 5. 获取多签钱包的pendingTxs （待签名的交易）
+// 6. 获取多签钱包的allTxs （所有交易）
+// 7. 通过safeTxHash获取交易签名详情, safeTxHash在sendTx的例子中可以找到
+// 8. 通过safeTxHash获取交易已经有那些人签名了
 
 async function get(): Promise<void> {
     try {
-        // 检查环境变量
-        if (!process.env['PRIVATE_KEY']) {
-            throw new Error('请添加.env文件并设置环境变量 PRIVATE_KEY');
-        }
+        const safeAddress = "0xB7c479d52C7e0ca201B017A7C070927E4d2BA516"
+        const safeUtil = new SafeUtils(process.env['PRIVATE_KEY']!, safeAddress)
+        await safeUtil.initSafe()
 
-        // 创建provider和signer
-        const provider = new ethers.JsonRpcProvider(SEPOLIA_RPC_URL);
-        const signer = new ethers.Wallet(process.env['PRIVATE_KEY'], provider);
-
-        const protocolKit = await Safe.init({
-            provider: SEPOLIA_RPC_URL,
-            signer: signer.address,
-            safeAddress: safeAddress
-          })
+        // 查询某个地址参与的多签
+        const decodeData = await safeUtil.apiKit.getSafesByOwner(RECIPIENT_ADDRESS)
+        console.log('参与的多签:', decodeData)
 
         //获取多签钱包的owners
-        const owners = await protocolKit.getOwners()
+        const owners = await safeUtil.protocolKit.getOwners()
         console.log('多签钱包所有者:', owners)
         //获取多签需要多少个签名才能执行交易
-        const threshold = await protocolKit.getThreshold()
+        const threshold = await safeUtil.protocolKit.getThreshold()
         console.log('多签需要多少个签名才能执行交易:', threshold)
 
+        //获取多签钱包的incomingTxs
+        const incomingTxs = await safeUtil.apiKit.getIncomingTransactions(safeAddress)
+        console.log('多签钱包的incomingTxs:', incomingTxs)
+
+        //获取多签钱包的pendingTxs
+        const pendingTxs = await safeUtil.apiKit.getPendingTransactions(safeAddress)
+        console.log('多签钱包的pendingTxs:', pendingTxs)
+
+        //获取多签钱包的allTxs
+        const config = {
+            executed: true,
+            queued: true,
+            trusted: true
+        }
+        const allTxs = await safeUtil.apiKit.getAllTransactions(safeAddress, config as any)
+        console.log('多签钱包的allTxs:', allTxs)
+
+
+        //通过safeTxHash获取交易签名详情, safeTxHash在sendTx的例子中可以找到
+        const tx = await safeUtil.apiKit.getTransaction("0x9e4e36fab845e19dbd048dc3c4c598ee426d6373afae45d9030371b508b7eb5a")
+        console.log('交易详情:', tx)
+        //通过safeTxHash获取交易已经有那些人签名了
+        const confirmations = await safeUtil.apiKit.getTransactionConfirmations("0x9e4e36fab845e19dbd048dc3c4c598ee426d6373afae45d9030371b508b7eb5a")
+        console.log('交易签名情况:', confirmations)
     } catch (error) {
         throw error;
     }

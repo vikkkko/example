@@ -9,7 +9,11 @@
     "dev:create": "ts-node src/MultiAddress_Create.ts",
     "dev:get": "ts-node src/MultiAddress_Get.ts",
     "dev:send": "ts-node src/MultiAddress_SendTx.ts",
+    "dev:setting": "ts-node src/MultiAddress_Setting.ts",
     "dev:graph": "ts-node src/GetDataFromGraph.ts",
+    "dev:utils": "ts-node src/utils/SafeUtils.ts",
+    "dev:example": "ts-node src/Example_UsingUtils.ts",
+    "dev:multi": "ts-node src/Example_MultipleInstances.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
